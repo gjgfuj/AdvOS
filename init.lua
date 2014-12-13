@@ -1,4 +1,4 @@
-local os_config = {hostname="micrOS",netname="default",user="user",logbuffer="10",log="false"}
+--local os_config = {hostname="advOS",netname="default",user="user",logbuffer="10",log="false"}
 function error(errordata)
  syscall.execute("stdout_write","error: "..errordata)
 end
@@ -83,7 +83,7 @@ syscall.register("stdout_write",function(msg) --register syscall for output
      y = y + 1
     end
    end
-  syscall.execute("log","[stdout] ["..syscall.execute("network_get_user").."] "..msg)
+--  syscall.execute("log","[stdout] ["..syscall.execute("network_get_user").."] "..msg)
  else
   repeat
    syscall.execute("stdout_write",msg:sub(1,mx-1))
@@ -139,9 +139,9 @@ syscall.register('stdin_read', function(prefix,rc)
   y = y + 1
  end
  if rc == nil then
-  syscall.execute("log","[stdin] ["..syscall.execute("network_get_user").."] "..prefix.."> "..s)
+--  syscall.execute("log","[stdin] ["..syscall.execute("network_get_user").."] "..prefix.."> "..s)
  else
-  syscall.execute("log","[stdin] ["..syscall.execute("network_get_user").."] "..prefix.."> "..rc:rep(s:len()))
+--  syscall.execute("log","[stdin] ["..syscall.execute("network_get_user").."] "..prefix.."> "..rc:rep(s:len()))
  end
  return s
 end)
@@ -256,64 +256,63 @@ syscall.register("computer_reboot", function() computer.shutdown(true) end)
 syscall.execute("fs_mount",component.proxy(computer.getBootAddress()),"boot")
 syscall.execute("fs_mount",component.proxy(computer.tmpAddress()),"temp")
 --log, temp stuff
-local log_buffer = {}
-syscall.register("log",function(msg)
- if os_config.log == "true" then
-  if #log_buffer < tonumber(os_config.logbuffer) then
-   table.insert(log_buffer,"["..tostring(computer.uptime()).."] "..msg.."\n")
-  else
-   syscall.execute("log_flush")
-  end
- end
-end)
-syscall.register("log_flush", function()
- if os_config.log == "true" then
-  local f = syscall.execute("fs_open","boot:/micrOS.log","a")
-  local log_s = ""
-  for k,v in ipairs(log_buffer) do
-   log_s = log_s..v or ""
-  end
-  f.write(log_s)
-  f.close()
-  log_buffer = {}
- end
-end)
-syscall.register("config_reload", function()
- if syscall.execute("fs_exists","boot:/micrOS.cfg") then
-  local f=syscall.execute("fs_open","boot:/micrOS.cfg")
-  local c = ""
-  local l = ""
-  repeat
-   l=f.read() or ""
-   c=c..l
-  until l == "" or l == nil
-  f.close()
-  for word in c:gmatch("[^\r\n]+") do
-   local st,ed = word:find("=")
-   os_config[word:sub(1,st-1)]=word:sub(ed+1)
-  end
- else
-  local default_config = "hostname=micrOS\r\nnetname=default\r\nuser=user\r\nlogbuffer=10\r\nlog=false"
-  local f=syscall.execute("fs_open","boot:/micrOS.cfg","w")
-  f.write(default_config)
-  f.close()
- end
-end)
-syscall.register("network_get_hostname",function()
- return os_config.hostname
-end)
-syscall.register("network_get_user", function()
- return os_config.user
-end)
+--local log_buffer = {}
+--syscall.register("log",function(msg)
+-- if os_config.log == "true" then
+--  if #log_buffer < tonumber(os_config.logbuffer) then
+--   table.insert(log_buffer,"["..tostring(computer.uptime()).."] "..msg.."\n")
+--  else
+--   syscall.execute("log_flush")
+--  end
+-- end
+--end)
+--syscall.register("log_flush", function()
+-- if os_config.log == "true" then
+--  local f = syscall.execute("fs_open","boot:/micrOS.log","a")
+--  local log_s = ""
+--  for k,v in ipairs(log_buffer) do
+--  end
+--  f.write(log_s)
+--  f.close()
+--  log_buffer = {}
+-- end
+--end)
+--syscall.register("config_reload", function()
+-- if syscall.execute("fs_exists","boot:/micrOS.cfg") then
+--  local f=syscall.execute("fs_open","boot:/micrOS.cfg")
+--  local c = ""
+--  local l = ""
+--  repeat
+--   l=f.read() or ""
+--   c=c..l
+--  until l == "" or l == nil
+--  f.close()
+--  for word in c:gmatch("[^\r\n]+") do
+--   local st,ed = word:find("=")
+--   os_config[word:sub(1,st-1)]=word:sub(ed+1)
+--  end
+-- else
+--  local default_config = "hostname=micrOS\r\nnetname=default\r\nuser=user\r\nlogbuffer=10\r\nlog=false"
+--  local f=syscall.execute("fs_open","boot:/micrOS.cfg","w")
+--  f.write(default_config)
+--  f.close()
+-- end
+--end)
+--syscall.register("network_get_hostname",function()
+-- return os_config.hostname
+--end)
+--syscall.register("network_get_user", function()
+-- return os_config.user
+--end)
 function computer.shutdown(reboot)
- syscall.execute("flushlog")
+-- syscall.execute("flushlog")
  computer.shutdown(reboot)
 end
-syscall.execute("config_reload")
-syscall.execute("stdout_write",(math.floor(computer.totalMemory()/1024)).."k total, "..tostring(math.floor(computer.freeMemory()/1024)).."k free, "..tostring(math.floor((computer.totalMemory()-computer.freeMemory())/1024)).."k used")
+--syscall.execute("config_reload")
+--syscall.execute("stdout_write",(math.floor(computer.totalMemory()/1024)).."k total, "..tostring(math.floor(computer.freeMemory()/1024)).."k free, "..tostring(math.floor((computer.totalMemory()-computer.freeMemory())/1024)).."k used")
 if syscall.execute("fs_exists","postinit.lua") then
  while true do
-  os_config.user=syscall.execute("stdin_read","Username")
+  --os_config.user=syscall.execute("stdin_read","Username")
   syscall.execute("runfile","postinit.lua")
  end
 end

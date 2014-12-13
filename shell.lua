@@ -21,12 +21,12 @@ local cmds = {"Commands:",
 "move/mv [source] [destination] - moves a file from source to destination",
 "edit - runs the editor defined by the envar",
 "mount - drive mounting config",
-"flushlog - flushes the system log to disk, only if logging is enabled",
+--"flushlog - flushes the system log to disk, only if logging is enabled",
 "?/h - displays this help dialog"}
 local run=true
 while run do
  if syscall.execute("shell_get_current_dir") == "/" then syscall.execute("shell_set_current_dir","") end
- local input = syscall.execute("stdin_read",syscall.execute("network_get_user").."@"..syscall.execute("network_get_hostname").." "..syscall.execute("fs_get_drive")..":"..syscall.execute("shell_get_current_dir"))
+ local input = syscall.execute("stdin_read",syscall.execute("fs_get_drive")..":"..syscall.execute("shell_get_current_dir"))
  local args = {}
  for word in input:gmatch("([^%s]+)") do table.insert(args, word) end
  local input = table.remove(args,1)
@@ -88,8 +88,8 @@ while run do
   syscall.execute("fs_mount",component.proxy(mountaddr),mountAs)
  elseif input == "unmount" or input == "umount" then
   syscall.execute("fs_unmount",args[1])
- elseif input == "flushlog" then
-  syscall.execute("log_flush")
+-- elseif input == "flushlog" then
+--  syscall.execute("log_flush")
  elseif input == "?" or input == "h" then
   for k,v in pairs(cmds) do
    p(v)
